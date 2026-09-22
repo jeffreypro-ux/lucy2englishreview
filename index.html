@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lucy 的英语复习站</title>
+<style>
+  :root{
+    --bg:#fff7ed; --card:#ffffff; --ink:#3f3226; --sub:#8a7a68;
+    --brand:#f97316; --brand2:#fb923c; --soft:#ffedd5;
+    --green:#16a34a; --radius:18px;
+    --shadow:0 6px 20px rgba(180,120,60,.12);
+  }
+  *{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
+  body{
+    font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.75;
+    background-image:radial-gradient(circle at 85% 8%, #ffedd5 0, transparent 45%),
+                     radial-gradient(circle at 8% 92%, #fef3c7 0, transparent 40%);
+    min-height:100vh;
+  }
+  .wrap{max-width:820px; margin:0 auto; padding:0 18px 90px;}
+
+  /* ===== 顶栏 ===== */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(255,247,237,.88); backdrop-filter:blur(10px);
+    border-bottom:1px solid #f5e3cf;
+  }
+  .nav{max-width:820px; margin:0 auto; padding:12px 18px; display:flex; align-items:center; gap:8px;}
+  .logo{font-size:20px; font-weight:800; color:var(--brand); cursor:pointer; display:flex; align-items:center; gap:6px; user-select:none;}
+  .navlinks{margin-left:auto; display:flex; gap:6px;}
+  .navlinks a{
+    text-decoration:none; color:var(--sub); font-size:14px; padding:6px 12px; border-radius:999px; transition:.2s;
+  }
+  .navlinks a:hover{background:var(--soft); color:var(--brand);}
+  .navlinks a.active{background:var(--brand); color:#fff; font-weight:700;}
+
+  /* ===== 首页 ===== */
+  .hero{padding:44px 6px 10px; text-align:center;}
+  .hero .hi{font-size:15px; color:var(--sub); letter-spacing:2px;}
+  .hero h1{font-size:34px; margin:6px 0 8px;}
+  .hero p{color:var(--sub); font-size:15px;}
+  .hero .mascot{font-size:52px; margin-bottom:4px;}
+  .stats{display:flex; justify-content:center; gap:14px; margin:26px 0 8px; flex-wrap:wrap;}
+  .stat{
+    background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:14px 26px; text-align:center; min-width:110px;
+  }
+  .stat b{font-size:26px; color:var(--brand); display:block;}
+  .stat span{font-size:13px; color:var(--sub);}
+
+  .section-title{margin:36px 4px 14px; font-size:19px; display:flex; align-items:center; gap:8px;}
+  .section-title::after{content:""; flex:1; height:1px; background:#f0ddc6;}
+
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:14px;}
+  .lesson-card{
+    background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:18px; cursor:pointer; transition:transform .18s, box-shadow .18s;
+    border:2px solid transparent; position:relative;
+  }
+  .lesson-card:hover{transform:translateY(-3px); box-shadow:0 10px 26px rgba(180,120,60,.18); border-color:#fed7aa;}
+  .lesson-card .no{
+    display:inline-block; background:var(--soft); color:var(--brand);
+    font-size:12px; font-weight:800; padding:2px 10px; border-radius:999px; margin-bottom:8px;
+  }
+  .lesson-card h3{font-size:17px; margin-bottom:4px;}
+  .lesson-card .meta{font-size:13px; color:var(--sub);}
+  .lesson-card .arrow{position:absolute; right:16px; bottom:14px; color:#e7d3ba; font-size:18px;}
+
+  /* ===== 课程页 ===== */
+  .crumb{padding:22px 2px 0; font-size:13px; color:var(--sub);}
+  .crumb a{color:var(--brand); text-decoration:none; cursor:pointer;}
+  .lesson-head{margin:8px 0 20px;}
+  .lesson-head .no{background:var(--brand); color:#fff; font-size:12px; font-weight:800; padding:3px 12px; border-radius:999px;}
+  .lesson-head h1{font-size:26px; margin:10px 0 4px;}
+  .lesson-head .meta{color:var(--sub); font-size:14px;}
+
+  .block{background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:20px 22px; margin-bottom:16px;}
+  .block h2{font-size:17px; margin-bottom:12px; display:flex; align-items:center; gap:8px; color:#7c4a12;}
+  .block h2 .dot{width:9px; height:9px; border-radius:50%; background:var(--brand); flex:none;}
+
+  .sline{padding:7px 0; border-bottom:1px dashed #f3e6d3; font-size:15.5px;}
+  .sline:last-child{border-bottom:none;}
+  .en{color:#1d4ed8; font-weight:600;}
+  .say{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:28px; height:28px; margin-left:8px; vertical-align:-7px;
+    background:var(--soft); border:none; border-radius:50%; cursor:pointer; font-size:14px;
+    transition:.15s;
+  }
+  .say:hover{background:var(--brand); transform:scale(1.1);}
+  .say:hover::after{content:"🔊";}
+  .say:hover .ico{display:none;}
+
+  .dialogue{display:flex; flex-direction:column; gap:10px;}
+  .dlg{display:flex; gap:10px; align-items:flex-start;}
+  .dlg .who{
+    flex:none; width:64px; text-align:center; font-size:13px; font-weight:700;
+    padding:4px 0; border-radius:10px; margin-top:2px;
+  }
+  .who.a{background:#dbeafe; color:#1d4ed8;}
+  .who.b{background:#fce7f3; color:#be185d;}
+  .who.t{background:#dcfce7; color:#15803d;}
+  .dlg .line{flex:1; font-size:15.5px;}
+
+  .homework{background:linear-gradient(135deg,#fffbeb,#fff7ed); border:1px solid #fde6c8;}
+  .homework p{font-size:15.5px;}
+  .done-btn{
+    margin-top:12px; background:var(--green); color:#fff; border:none; padding:9px 22px;
+    border-radius:999px; font-size:14px; font-weight:700; cursor:pointer;
+  }
+  .done-btn.off{background:#d6c8b4;}
+  .pager{display:flex; justify-content:space-between; margin-top:8px;}
+  .pager a{
+    background:var(--card); box-shadow:var(--shadow); border-radius:12px; padding:10px 18px;
+    text-decoration:none; color:var(--brand); font-size:14px; font-weight:700; cursor:pointer;
+  }
+
+  /* ===== 生词页 ===== */
+  .search-row{position:sticky; top:57px; z-index:40; padding:14px 0 10px; background:linear-gradient(var(--bg) 80%, transparent);}
+  .search{
+    width:100%; padding:13px 18px 13px 44px; font-size:15px; border:2px solid #f3ddc2; border-radius:999px;
+    background:var(--card); outline:none; transition:.2s;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%23c9a06a' stroke-width='2'%3E%3Ccircle cx='8' cy='8' r='6'/%3E%3Cpath d='m13 13 4 4'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:16px center;
+  }
+  .search:focus{border-color:var(--brand);}
+  .word-card{
+    background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:16px 18px; margin-bottom:12px; display:flex; gap:14px; align-items:flex-start;
+  }
+  .word-main{flex:1;}
+  .word-top{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;}
+  .word-top .w{font-size:22px; font-weight:800; color:#7c2d12;}
+  .word-top .p{color:var(--sub); font-size:14px;}
+  .word-top .say{width:32px; height:32px; font-size:15px;}
+  .word-m{font-size:14.5px; color:#374151; margin-top:2px;}
+  .word-e{
+    margin-top:8px; background:#f8fafc; border-left:3px solid var(--brand2);
+    padding:8px 12px; border-radius:0 10px 10px 0; font-size:14.5px; color:#1e3a8a;
+  }
+  .word-e .say{width:24px; height:24px; font-size:12px; vertical-align:-5px;}
+  .empty{text-align:center; color:var(--sub); padding:50px 0;}
+
+  /* ===== 声音设置 ===== */
+  .fab{
+    position:fixed; right:18px; bottom:18px; z-index:60;
+    width:52px; height:52px; border-radius:50%; border:none; cursor:pointer;
+    background:var(--brand); color:#fff; font-size:22px; box-shadow:0 8px 20px rgba(249,115,22,.4);
+    transition:.2s;
+  }
+  .fab:hover{transform:scale(1.08);}
+  .modal-mask{
+    position:fixed; inset:0; background:rgba(60,40,20,.35); z-index:70;
+    display:none; align-items:center; justify-content:center; padding:20px;
+  }
+  .modal-mask.show{display:flex;}
+  .modal{
+    background:var(--card); border-radius:22px; padding:26px; max-width:420px; width:100%;
+    max-height:80vh; overflow:auto; box-shadow:0 20px 60px rgba(0,0,0,.25);
+  }
+  .modal h3{margin-bottom:14px; font-size:18px;}
+  .modal label{display:block; font-size:14px; color:var(--sub); margin:14px 0 6px;}
+  .modal select, .modal input[type=range]{width:100%;}
+  .modal select{
+    padding:10px 12px; border-radius:12px; border:2px solid #f3ddc2; font-size:14px; background:#fffdf9; outline:none;
+  }
+  .modal .tip{font-size:12.5px; color:var(--sub); margin-top:14px; background:#fff7ed; border-radius:10px; padding:10px 12px;}
+  .close-x{
+    float:right; border:none; background:#f5ead9; width:30px; height:30px; border-radius:50%;
+    cursor:pointer; font-size:15px; color:var(--sub);
+  }
+  .test-row{display:flex; gap:8px; margin-top:16px;}
+  .test-row button{
+    flex:1; padding:10px; border:none; border-radius:12px; background:var(--soft); color:var(--brand);
+    font-weight:700; cursor:pointer; font-size:14px;
+  }
+
+  footer{text-align:center; color:#c4ad8e; font-size:12.5px; padding:40px 0 0;}
+
+  @media (max-width:560px){
+    .hero h1{font-size:28px;}
+    .lesson-head h1{font-size:22px;}
+    .dlg .who{width:52px; font-size:12px;}
+  }
+</style>
+<base target="_blank">
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <div class="logo" onclick="go('#/')">📚 <span id="siteName">Lucy 的英语复习站</span></div>
+    <nav class="navlinks">
+      <a href="#/" onclick="go('#/')" data-route="home">首页</a>
+      <a href="#/words" onclick="go('#/words')" data-route="words">生词本</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="app"></main>
+
+<button class="fab" onclick="openSettings()" title="声音设置">🔊</button>
+
+<div class="modal-mask" id="mask" onclick="if(event.target===this)closeSettings()">
+  <div class="modal">
+    <button class="close-x" onclick="closeSettings()">✕</button>
+    <h3>🔊 声音设置</h3>
+    <label>选择声音（推荐女声 👩）</label>
+    <select id="voiceSel"></select>
+    <label>语速：<span id="rateVal">0.9</span></label>
+    <input type="range" id="rateRange" min="0.5" max="1.5" step="0.1" value="0.9">
+    <div class="test-row">
+      <button onclick="speak('Hello! Nice to meet you.')">▶ 试听英语</button>
+      <button onclick="speak('你好，我们开始复习吧！')">▶ 试听中文</button>
+    </div>
+    <div class="tip">发音使用浏览器内置语音引擎，完全免费。不同设备可选声音不同；iPad/手机建议选 Samantha 或 Zira 等女声。</div>
+  </div>
+</div>
+
+<script>
+/* ================================================================
+   ★ 网站配置（老师改这里）
+   ================================================================ */
+const SITE = {
+  studentName: "Lucy",            // 学生名字
+  teacherLine: "每节课后记得来复习哦 🌟",
+  mascot: "🦉",
+};
+
+/* ================================================================
+   ★ 课程数据
+   添加新课：复制一节模板，粘贴到 ★★★ 新课程粘贴在这一行上方 ★★★ 的位置
+   支持的区块 type：
+     list    句型/要点列表      items: ["<span class='en'>英文</span> 中文"]
+     dialog  对话               lines: [["说话人","内容"], ...]
+     homework课后作业            text: "作业内容"
+   想用真人录音 mp3：给句子对象用 {say:"句子", audio:"audio/xx.mp3"}，
+   或给整节课加 audio 字段。没有 mp3 会自动用内置语音。
+   ================================================================ */
+const LESSONS = [
+  {
+    id: 1,
+    date: "2026-09-21",
+    title: "第一课：特殊疑问句",
+    subtitle: "Mike 老师 · 课文热身朗读 · 疑问句造句",
+    sections: [
+      { h: "一、热身朗读：A Private Conversation", type: "list", items: [
+        "<span class='en'>Last week I went to the theatre.</span> 上周我去剧院看戏。",
+        "<span class='en'>I had a very good seat.</span> 我的座位很好。",
+        "<span class='en'>The play was very interesting.</span> 这部戏剧很有意思。",
+        "<span class='en'>I did not enjoy it.</span> 我却无法欣赏。",
+        "<span class='en'>A young man and a young woman were sitting behind me.</span> 一对年轻男女坐在我后面。",
+        "<span class='en'>They were talking loudly.</span> 他们在大声说话。",
+        "<span class='en'>I got very angry.</span> 我非常生气。",
+        "<span class='en'>I could not hear the actors.</span> 我听不见演员在说什么。",
+        "<span class='en'>I turned round.</span> 我转过身去。",
+        "<span class='en'>I looked at the man and the woman angrily.</span> 我愤怒地看着那一男一女。",
+        "<span class='en'>They did not pay any attention.</span> 他们毫不理会。",
+        "<span class='en'>In the end, I could not bear it.</span> 最后，我忍无可忍。",
+        "<span class='en'>I turned round again.</span> 我又转过身去。",
+        "<span class='en'>I can't hear a word!</span> 我一个字也听不见！",
+        "<span class='en'>It's none of your business.</span> 这不关你的事。",
+        "<span class='en'>the young man said rudely.</span> 那个年轻男子粗鲁地说。",
+        "<span class='en'>This is a private conversation!</span> 这是私人谈话！"
+      ]},
+      { h: "二、核心语法：特殊疑问句怎么造", type: "list", items: [
+        "句子顺序：<span class='en'>疑问词 + 助动词 + 主语 + 动词</span>",
+        "助动词随时态变化：过去时用 <span class='en'>did</span>，现在时用 <span class='en'>do / does</span>",
+        "描述状态（主系表）用 be 动词：<span class='en'>What is this article?</span> 这篇文章是什么？",
+        "be 动词后接 <span class='en'>doing</span> 表现在进行时：<span class='en'>What are you doing?</span>",
+        "一般现在时描述习惯和经常发生的事：<span class='en'>Why do they do this?</span>",
+        "疑问词可以不止一个单词：<span class='en'>how many books</span> / <span class='en'>how far</span>"
+      ]},
+      { h: "三、课堂句型操练", type: "list", items: [
+        "<span class='en'>What did you do today?</span> 你今天做了什么？",
+        "<span class='en'>Which music style do you like the most?</span> 你最喜欢哪种音乐风格？",
+        "<span class='en'>Who is your project leader?</span> 你们的项目负责人是谁？",
+        "<span class='en'>Why do they do this?</span> 他们为什么这样做？",
+        "<span class='en'>Where did you go yesterday?</span> 你昨天去哪里了？",
+        "<span class='en'>How did you do it?</span> 你是怎么做到的？",
+        "<span class='en'>What did you learn from this article?</span> 你从这篇文章中学到了什么？",
+        "<span class='en'>What are you doing?</span> 你现在正在做什么？"
+      ]},
+      { h: "四、How 家族（问数量、距离、程度…）", type: "list", items: [
+        "<span class='en'>How many</span> + 可数名词复数：<span class='en'>How many books do you have?</span>",
+        "<span class='en'>How much</span> + 不可数名词（money 没有复数）：<span class='en'>How much water do you drink?</span>",
+        "<span class='en'>How far</span> 多远：<span class='en'>How far is the station?</span>",
+        "<span class='en'>How long</span> 多久：<span class='en'>How long will you stay?</span>",
+        "<span class='en'>How often</span> 多久一次：<span class='en'>How often do you travel?</span>",
+        "<span class='en'>How soon</span> 还要多久：<span class='en'>How soon will he come back?</span>",
+        "<span class='en'>How old / big / tall / high / deep / fast</span>：<span class='en'>How big is your room?</span>",
+        "<span class='en'>How + 形容词</span> 问程度：<span class='en'>How beautiful is your sister?</span> / <span class='en'>How bad is your boyfriend?</span>"
+      ]},
+      { h: "五、场景实战：问外国朋友四个问题", type: "dialog", lines: [
+        ["Lucy", "Where do you want to go?"],
+        ["Mike", "I want to go to the park."],
+        ["Lucy", "What food do you want to eat?"],
+        ["Mike", "I like spicy food."],
+        ["Lucy", "When do you want to get up to play?"],
+        ["Mike", "Usually I get up at six, but today I want to get up at five to see the sunrise."],
+        ["Lucy", "How do you think of this city?"],
+        ["Mike", "I live in Shenzhen. It's a beautiful and technological city. I really like the atmosphere."]
+      ]},
+      { h: "六、口语小贴士", type: "list", items: [
+        "连读：辅音 + 元音要连起来 → <span class='en'>look at</span> 读成「loo-kat」，<span class='en'>bear it</span> 读成「bea-rit」",
+        "过去式 <span class='en'>-ed</span> 夹在词中通常不发音：<span class='en'>looked at</span> 直接读「look at」",
+        "朗读时把音量降低一点、气息减弱，反而说得更流利",
+        "<span class='en'>where</span> /weə/ 注意不要读成 well，本课重点纠正发音"
+      ]},
+      { h: "七、课后作业", type: "homework", text: "用今天学的疑问句型，每个句型各造 2 个新句子（不能和课堂例句重复），读一遍录成语音发给 Mike 老师。同时复习本课生词，明天开始背单词打卡！" }
+    ]
+  }
+  // ★★★ 新课程粘贴在这一行的上方 ★★★
+];
+
+/* ================================================================
+   ★ 生词数据
+   添加单词：复制一行粘贴到 ★★★ 新单词粘贴在这一行上方 ★★★
+   { w:"单词", p:"音标", m:"词性 中文", e:"例句", audio:"audio/xx.mp3"(可选) }
+   ================================================================ */
+const WORDS = [
+  { w:"almost",   p:"/ˈɔːlməʊst/",   m:"adv. 差不多",        e:"I stayed at home almost all day." },
+  { w:"theatre",  p:"/ˈθɪətə/",      m:"n. 剧院，剧场",      e:"Last week I went to the theatre." },
+  { w:"business", p:"/ˈbɪznəs/",     m:"n. 业务；事情",      e:"It's none of your business." },
+  { w:"attention",p:"/əˈtenʃn/",     m:"n. 注意",            e:"They did not pay any attention." },
+  { w:"private",  p:"/ˈpraɪvət/",    m:"adj. 私人的",        e:"This is a private conversation." },
+  { w:"angrily",  p:"/ˈæŋɡrəli/",    m:"adv. 生气地",        e:"I can't hear a word, I said angrily." },
+  { w:"rudely",   p:"/ˈruːdli/",     m:"adv. 粗鲁地",        e:"The young man said rudely." },
+  { w:"actor",    p:"/ˈæktə/",       m:"n. 演员",            e:"I could not hear the actors." },
+  { w:"bear",     p:"/beə/",         m:"v. 承受",            e:"In the end I could not bear it." },
+  { w:"article",  p:"/ˈɑːtɪkl/",     m:"n. 文章",            e:"What did you learn from this article?" },
+  { w:"style",    p:"/staɪl/",       m:"n. 风格",            e:"Which music style do you like the most?" },
+  { w:"leader",   p:"/ˈliːdə/",      m:"n. 领导；负责人",    e:"Who is your project leader?" },
+  { w:"stay",     p:"/steɪ/",        m:"v. 待；停留",        e:"How long will you stay?" },
+  { w:"spicy",    p:"/ˈspaɪsi/",     m:"adj. 辣的",          e:"I like spicy food." },
+  { w:"wake up",  p:"/weɪk ʌp/",     m:"phr. 醒来",          e:"When do you want to wake up?" },
+  { w:"get up",   p:"/ɡet ʌp/",      m:"phr. 起床",          e:"I usually get up at six o'clock." }
+  // ★★★ 新单词粘贴在这一行的上方 ★★★
+];
+
+/* ================================================================
+   下面是网站程序，一般不需要修改
+   ================================================================ */
+const app = document.getElementById("app");
+let VOICE = null, RATE = 0.9;
+
+function loadSettings(){
+  try{
+    const s = JSON.parse(localStorage.getItem("voiceSettings")||"{}");
+    RATE = s.rate || 0.9;
+    if(s.voiceName){
+      const v = speechSynthesis.getVoices().find(v=>v.name===s.voiceName);
+      if(v) VOICE = v;
+    }
+  }catch(e){}
+}
+function saveSettings(){
+  localStorage.setItem("voiceSettings", JSON.stringify({
+    rate: RATE, voiceName: VOICE ? VOICE.name : null
+  }));
+}
+
+function speak(text, audio){
+  if(audio){ new Audio(audio).play(); return; }
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  if(VOICE) u.voice = VOICE;
+  u.rate = RATE; u.lang = VOICE ? VOICE.lang : "en-US";
+  speechSynthesis.speak(u);
+}
+
+// 转义，避免 I'm / What's 这类缩写的单引号截断点击代码
+function jsStr(s){ return String(s).replace(/\\/g,"\\\\").replace(/'/g,"\\'").replace(/\n/g," "); }
+function sayBtn(text, audio){
+  const t = jsStr(text);
+  const a = audio ? `,'${jsStr(audio)}'` : "";
+  return `<button class="say" onclick="speak('${t}'${a})" title="播放发音"><span class="ico">🔈</span></button>`;
+}
+
+/* ---------- 页面模板 ---------- */
+function stripEn(s){ return s.replace(/<[^>]+>/g,""); }
+function backHome(){ return `<a href="#/" onclick="go('#/');return false;">← 返回首页</a>`; }
+
+function homePage(){
+  const done = JSON.parse(localStorage.getItem("lessonsDone")||"{}");
+  return `
+  <div class="hero">
+    <div class="mascot">${SITE.mascot}</div>
+    <div class="hi">WELCOME BACK</div>
+    <h1>${SITE.studentName}的英语复习站</h1>
+    <p>${SITE.teacherLine}</p>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>${LESSONS.length}</b><span>课程</span></div>
+    <div class="stat"><b>${Object.keys(done).length}</b><span>已复习</span></div>
+    <div class="stat"><b>${WORDS.length}</b><span>生词</span></div>
+  </div>
+  <h2 class="section-title">📖 课程笔记</h2>
+  <div class="grid">
+    ${LESSONS.map(l=>`
+      <div class="lesson-card" onclick="go('#/lesson/${l.id}')">
+        <div class="no">第 ${l.id} 课</div>
+        <h3>${l.title.replace(/^第.课：?/,"")}</h3>
+        <div class="meta">${l.date} · ${l.subtitle||""} ${done[l.id]?"✅":""}</div>
+        <div class="arrow">→</div>
+      </div>`).join("")}
+  </div>
+  <h2 class="section-title">🔤 生词本</h2>
+  <div class="grid">
+    <div class="lesson-card" onclick="go('#/words')">
+      <div class="no">${WORDS.length} 个单词</div>
+      <h3>点击听发音 · 看例句</h3>
+      <div class="meta">每天坚持读一遍 🌱</div>
+      <div class="arrow">→</div>
+    </div>
+  </div>
+  <footer>Made with ❤️ for ${SITE.studentName}</footer>`;
+}
+
+function lessonPage(id){
+  const l = LESSONS.find(x=>x.id===id);
+  if(!l) return `<div class="empty">没有找到这一课 😢<br><br><a href="#/" style="color:var(--brand)">← 返回首页</a></div>`;
+  const idx = LESSONS.indexOf(l);
+  const prev = LESSONS[idx-1], next = LESSONS[idx+1];
+  const done = JSON.parse(localStorage.getItem("lessonsDone")||"{}");
+
+  const blocks = l.sections.map(s=>{
+    if(s.type==="list"){
+      return `<div class="block"><h2><span class="dot"></span>${s.h}</h2>
+        ${s.items.map(it=>{
+          const audio = (typeof it==="object") ? it.audio : null;
+          const txt = (typeof it==="object") ? it.say : stripEn(it);
+          const body = (typeof it==="object") ? it.say : it;
+          return `<div class="sline">${body}${sayBtn(txt,audio)}</div>`;
+        }).join("")}
+      </div>`;
+    }
+    if(s.type==="dialog"){
+      const cls = ["a","b","t"];
+      return `<div class="block"><h2><span class="dot"></span>${s.h}</h2>
+        <div class="dialogue">
+        ${s.lines.map(([who,line],i)=>`
+          <div class="dlg">
+            <div class="who ${cls[i%3]}">${who}</div>
+            <div class="line">${line}${sayBtn(line)}</div>
+          </div>`).join("")}
+        </div>
+      </div>`;
+    }
+    if(s.type==="homework"){
+      return `<div class="block homework"><h2><span class="dot"></span>${s.h}</h2>
+        <p>${s.text}</p>
+        <button class="done-btn ${done[l.id]?'off':''}" onclick="toggleDone(${l.id})">
+          ${done[l.id]?"✓ 已完成复习":"我复习完啦"}
+        </button>
+      </div>`;
+    }
+    return "";
+  }).join("");
+
+  return `
+  <div class="crumb">${backHome()}</div>
+  <div class="lesson-head">
+    <span class="no">第 ${l.id} 课</span>
+    <h1>${l.title}</h1>
+    <div class="meta">📅 ${l.date} &nbsp;·&nbsp; ${l.subtitle||""}</div>
+  </div>
+  ${blocks}
+  <div class="pager">
+    ${prev?`<a href="#/lesson/${prev.id}" onclick="go('#/lesson/${prev.id}');return false;">← 第 ${prev.id} 课</a>`:"<span></span>"}
+    ${next?`<a href="#/lesson/${next.id}" onclick="go('#/lesson/${next.id}');return false;">第 ${next.id} 课 →</a>`:"<span></span>"}
+  </div>`;
+}
+
+function wordsPage(filter=""){
+  const f = filter.trim().toLowerCase();
+  const list = WORDS.filter(w=>!f || w.w.toLowerCase().includes(f) || w.m.includes(f));
+  const fv = filter.replace(/"/g,"&quot;");
+  return `
+  <div class="crumb" style="padding-top:20px;">${backHome()}</div>
+  <div class="lesson-head">
+    <h1>🔤 生词本</h1>
+    <div class="meta">共 ${WORDS.length} 个单词 · 点 🔈 听发音</div>
+  </div>
+  <div class="search-row">
+    <input class="search" id="wordSearch" placeholder="搜索单词或中文意思…" value="${fv}" oninput="renderWords(this.value)">
+  </div>
+  <div id="wordList">
+    ${list.length ? list.map(w=>`
+      <div class="word-card">
+        <div class="word-main">
+          <div class="word-top">
+            <span class="w">${w.w}</span>
+            <span class="p">${w.p||""}</span>
+            ${sayBtn(w.w, w.audio)}
+          </div>
+          <div class="word-m">${w.m||""}</div>
+          <div class="word-e">${w.e||""}${w.e?sayBtn(w.e):""}</div>
+        </div>
+      </div>`).join("")
+    : `<div class="empty">没有找到相关单词 😢</div>`}
+  </div>`;
+}
+
+function renderWords(v){
+  const tmp = document.createElement("div");
+  tmp.innerHTML = wordsPage(v);
+  document.getElementById("wordList").innerHTML = tmp.querySelector("#wordList").innerHTML;
+  const input = document.getElementById("wordSearch");
+  input.focus(); input.setSelectionRange(input.value.length, input.value.length);
+}
+
+function toggleDone(id){
+  const done = JSON.parse(localStorage.getItem("lessonsDone")||"{}");
+  if(done[id]) delete done[id]; else done[id]=true;
+  localStorage.setItem("lessonsDone", JSON.stringify(done));
+  route();
+}
+
+/* ---------- 路由 ---------- */
+function go(h){ location.hash = h; }
+function route(){
+  const h = location.hash || "#/";
+  document.querySelectorAll(".navlinks a").forEach(a=>a.classList.remove("active"));
+  if(h.startsWith("#/lesson/")){
+    app.innerHTML = lessonPage(parseInt(h.split("/")[2]));
+    document.querySelector('[data-route="home"]').classList.add("active");
+  }else if(h.startsWith("#/words")){
+    app.innerHTML = wordsPage();
+    document.querySelector('[data-route="words"]').classList.add("active");
+  }else{
+    app.innerHTML = homePage();
+    document.querySelector('[data-route="home"]').classList.add("active");
+  }
+  window.scrollTo(0,0);
+}
+window.addEventListener("hashchange", route);
+
+/* ---------- 声音设置弹窗 ---------- */
+function fillVoices(){
+  const sel = document.getElementById("voiceSel");
+  const voices = speechSynthesis.getVoices();
+  sel.innerHTML = `<option value="">自动（默认声音）</option>` + voices.map(v=>{
+    const fem = /female|zira|samantha|karen|tessa|susan|hoda|melissa|google uk english female/i.test(v.name) ? " 👩" : "";
+    return `<option value="${jsStr(v.name)}" ${VOICE&&v.name===VOICE.name?"selected":""}>${v.name}${fem}（${v.lang}）</option>`;
+  }).join("");
+  sel.onchange = ()=>{
+    VOICE = voices.find(v=>v.name===sel.value) || null;
+    saveSettings();
+  };
+}
+function openSettings(){ document.getElementById("mask").classList.add("show"); fillVoices(); }
+function closeSettings(){ document.getElementById("mask").classList.remove("show"); speechSynthesis.cancel(); }
+document.getElementById("rateRange").oninput = function(){
+  RATE = parseFloat(this.value);
+  document.getElementById("rateVal").textContent = RATE.toFixed(1);
+  saveSettings();
+};
+
+/* ---------- 启动 ---------- */
+document.getElementById("siteName").textContent = SITE.studentName + "的英语复习站";
+loadSettings();
+document.getElementById("rateRange").value = RATE;
+document.getElementById("rateVal").textContent = RATE.toFixed(1);
+if(speechSynthesis.onvoiceschanged!==undefined) speechSynthesis.onvoiceschanged = fillVoices;
+route();
+</script>
+</body>
+</html>
