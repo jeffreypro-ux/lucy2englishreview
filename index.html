@@ -376,8 +376,59 @@ const LESSONS = [
       ]},
       { h: "七、课后作业", type: "homework", text: "每天坚持不背单词 15–30 分钟并复习旧词；跟读本课课文直到流利，把情态动词句型读熟录音发给 Mike 老师。放假期间每天背单词 + 阅读，不懂随时微信问。第三节课暂定 10 月 1 日晚 7:30。" }
     ]
+  },
+  {
+    id: 3,
+    date: "2026-10-08",
+    title: "第三课：并列句",
+    subtitle: "Mike 老师 · 课堂小测 · and / but / so · 中译英实战",
+    sections: [
+      { h: "一、课堂小测：错题复习", type: "list", items: [
+        "<span class='en'>What did you do during the holiday?</span> ✓ did 后面接动词原形",
+        "<span class='en'>Can you play the guitar?</span> can 后面接动词原形",
+        "<span class='en'>Where is she going?</span> is 后面接 doing（现在进行时）",
+        "<span class='en'>Does he like spicy food?</span> does 后面接动词原形",
+        "<span class='en'>How long did you stay in your hometown?</span> did 后面接动词原形",
+        "疑问词选择：<span class='en'>How far</span> 多远 / <span class='en'>How many books</span> 多少本 / <span class='en'>How often</span> 多久一次",
+        "连词成句：<span class='en'>How many photos did you take during the holiday?</span>",
+        "连词成句：<span class='en'>Did you stay at home or go traveling?</span> / <span class='en'>How was your holiday trip?</span>"
+      ]},
+      { h: "二、核心语法：并列句（and / but / so）", type: "list", items: [
+        "并列句 = 用 <span class='en'>and</span>（递进）、<span class='en'>but</span>（转折）、<span class='en'>so</span>（结果）连接两个简单句",
+        "先说准每个简单句，先判断它是<b>主谓宾</b>还是<b>主系表</b>，再用 and / but / so 连接",
+        "实义动词不能省略：<span class='en'>I can speak a little English, but I can't speak very well.</span>",
+        "<span class='en'>usually</span> 放在 be 动词后：<span class='en'>I am usually very busy at work.</span>",
+        "<span class='en'>work / job</span> 换着用，避免同一句里重复",
+        "英语先说重点：所以每天坐公交上班 → <span class='en'>So I go to work by bus every day.</span>",
+        "<span class='en'>a little far</span> 有点远 ≠ <span class='en'>far away</span> 很远",
+        "交通方式用 <span class='en'>by</span>：<span class='en'>by bus / by train / by plane</span>"
+      ]},
+      { h: "三、自我介绍（并列句完整版）", type: "list", items: [
+        "<span class='en'>Hello, I'm Lucy. I'm usually very busy at work, but I really love my job.</span>",
+        "<span class='en'>I can speak a little English, but I can't speak very well, so I'm studying English now.</span>",
+        "<span class='en'>I like music and traveling, and I also like eating spicy food.</span>",
+        "<span class='en'>My home is a little far from the station, so I go to work by bus every day.</span>",
+        "<span class='en'>This is me, thank you!</span>"
+      ]},
+      { h: "四、中译英实战：介绍化学", type: "list", items: [
+        "<span class='en'>Let me introduce chemistry.</span> 让我来介绍化学。",
+        "<span class='en'>Chemistry is a science, and it is all around us.</span> 化学是一门科学，它就在我们身边。",
+        "<span class='en'>When we cook every day, there are chemical reactions in the pot.</span> 我们每天做饭时，锅里就有化学反应。",
+        "<span class='en'>There is / There are</span> 句型：有什么 + 在哪里 → <span class='en'>There is a new TV in the room.</span>",
+        "<span class='en'>when</span> 引导时间（当……时）；<span class='en'>if</span> 是「如果」，表示条件",
+        "<span class='en'>we wash our hands with soap</span> 我们用肥皂洗手（下节课继续）"
+      ]},
+      { h: "五、口语小贴士", type: "list", items: [
+        "看到句子先判断：主谓宾 还是 主系表，判断对了就不会懵",
+        "中文喜欢把重点放后面，英语把重点放前面",
+        "口语不需要复杂语序：主谓宾 / 主系表 + and / but / so 就能流利表达",
+        "单词学习新方法：每天抽 3 个四级词汇，用主谓宾 / 主系表各造一句",
+        "不要害怕说错，先把意思和单词说出来，流利比完美更重要"
+      ]},
+      { h: "六、课后作业", type: "homework", text: "用 and / but / so 把简单句连成并列句，至少 5 句，读熟后录音发给 Mike 老师；每天用不背单词 15–30 分钟，转为四级词汇书；下节课继续「介绍化学」并入门从句。课程时间调整为每周一、周四。" }
+    ]
   }
-  // ★★★ 新课程粘贴在这一行的上方 ★★★
+  // ★★★ 新课程粘贴在这一行上方 ★★★
 ];
 
 /* ================================================================
@@ -413,8 +464,20 @@ const WORDS = [
   { w:"grocery",      p:"/ˈɡrəʊsəri/",    m:"n. 食品杂货",          e:"Would you like to buy some groceries after work?" },
   { w:"uncomfortable",p:"/ʌnˈkʌmftəbl/",  m:"adj. 不舒服的",        e:"I feel uncomfortable today." },
   { w:"homework",     p:"/ˈhəʊmwɜːk/",    m:"n. 家庭作业",          e:"Can I stay a little longer when I finish my homework?" },
-  { w:"take a walk",  p:"/teɪk ə wɔːk/",  m:"phr. 散步",            e:"Will you take a walk with me in the park?" }
-  // ★★★ 新单词粘贴在这一行的上方 ★★★
+  { w:"take a walk",  p:"/teɪk ə wɔːk/",  m:"phr. 散步",            e:"Will you take a walk with me in the park?" },
+  { w:"chemistry", p:"/ˈkemɪstri/",   m:"n. 化学",              e:"Let me introduce chemistry." },
+  { w:"science",   p:"/ˈsaɪəns/",     m:"n. 科学",              e:"Chemistry is a science." },
+  { w:"introduce", p:"/ɪntrəˈdjuːs/", m:"v. 介绍",              e:"Let me introduce myself." },
+  { w:"reaction",  p:"/riˈækʃn/",     m:"n. 反应",              e:"There are chemical reactions in the pot." },
+  { w:"pot",       p:"/pɒt/",         m:"n. 锅",                e:"There are chemical reactions in the pot." },
+  { w:"soap",      p:"/səʊp/",        m:"n. 肥皂",              e:"We wash our hands with soap." },
+  { w:"holiday",   p:"/ˈhɒlədeɪ/",    m:"n. 假期",              e:"What did you do during the holiday?" },
+  { w:"photo",     p:"/ˈfəʊtəʊ/",     m:"n. 照片",              e:"How many photos did you take?" },
+  { w:"travel",    p:"/ˈtrævl/",      m:"v. 旅行",              e:"Did you stay at home or go traveling?" },
+  { w:"usually",   p:"/ˈjuːʒuəli/",   m:"adv. 通常",            e:"I am usually very busy at work." },
+  { w:"job",       p:"/dʒɒb/",        m:"n. 工作",              e:"I really love my job." },
+  { w:"trip",      p:"/trɪp/",        m:"n. 旅行；出行",        e:"How was your holiday trip?" }
+  // ★★★ 新单词粘贴在这一行上方 ★★★
 ];
 
 /* ================================================================
