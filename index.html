@@ -194,6 +194,7 @@
     <div class="logo" onclick="go('#/')">📚 <span id="siteName">Lucy 的英语复习站</span></div>
     <nav class="navlinks">
       <a href="#/" onclick="go('#/')" data-route="home">首页</a>
+      <a href="#/drills" onclick="go('#/drills')" data-route="drills">举一反三</a>
       <a href="#/words" onclick="go('#/words')" data-route="words">生词本</a>
     </nav>
   </div>
@@ -483,6 +484,55 @@ const LESSONS = [
       { h: "七、课后作业", type: "homework", text: "把「介绍化学」整篇背熟，要流利、有节奏感，周四上课检查；继续每天不背单词 15–30 分钟。下节课周四见！" }
     ]
   },
+  {
+    id: 5,
+    date: "2026-10-15",
+    title: "第五课：主题演讲",
+    subtitle: "Mike 老师 · 鬼屋酒吧朗读 · 一分钟演讲法",
+    sections: [
+      { h: "一、热身朗读：鬼屋酒吧（完整版）", type: "list", items: [
+        "<span class='en'>Ian Thompson is going to sell it because it's haunted.</span> 因为闹鬼，所以要卖掉。",
+        "<span class='en'>He heard a strange noise coming from the bar.</span> 他听到酒吧传来奇怪的声音。",
+        "<span class='en'>The doors had been blocked by furniture.</span> 门被家具堵住了。",
+        "<span class='en'>He had turned the lights off before he went to bed, but they were on in the morning.</span> 睡前关了灯，早上灯却亮着。",
+        "<span class='en'>He had found five empty whisky bottles.</span> 他发现了五个空威士忌瓶。",
+        "<span class='en'>The villagers will not accept the pub, even if he gives it away.</span> 即使白送，村民也不接受这家酒吧。",
+        "生词：<span class='en'>haunted</span> 闹鬼的 · <span class='en'>furniture</span> 家具 · <span class='en'>suggest</span> 建议 · <span class='en'>accept</span> 接受 · <span class='en'>villager</span> 村民",
+        "<span class='en'>on / off</span> 在这里是形容词：<span class='en'>The lights were on.</span> 灯亮着"
+      ]},
+      { h: "二、复习：介绍化学（背诵检查 ✅）", type: "list", items: [
+        "Lucy 已能流利背诵「介绍化学」全篇，大部分语法正确",
+        "记住方法：用主谓宾、主系表这些简单句拼起来，口语不需要太复杂"
+      ]},
+      { h: "三、实战：What do you do today（四句话）", type: "list", items: [
+        "<span class='en'>Today I get up early and I have breakfast. Then I walked my dog, so I feel good. But in the afternoon I drive my car to another city for my work, so I feel tired now.</span>",
+        "开车：<span class='en'>drive my car to</span> + 地点 / <span class='en'>by car</span>",
+        "加目的让句子更有逻辑：<span class='en'>for my work</span>（为了工作）",
+        "<span class='en'>feel</span> 的过去式是 <span class='en'>felt</span>；说「当时的感觉」用 <span class='en'>I was feeling good.</span>",
+        "音量小一点、气息稳，不刻意想连读，反而更流利"
+      ]},
+      { h: "四、主题演讲：Describe a Trip You Enjoy（1 分钟）", type: "list", items: [
+        "方法：先搭<b>框架</b> → 列<b>关键词</b> → 加<b>感受</b>；演讲不是流水账，结尾要上价值",
+        "<span class='en'>Recently, the most meaningful trip was to Shenzhen.</span> 最近最有意义的一次旅行是去深圳。",
+        "<span class='en'>A few days ago I felt very bored. What ways can I make myself relax?</span> 前几天我很无聊，我可以用什么方式让自己放松呢？",
+        "<span class='en'>I asked a photographer out, and actually I didn't know her before. This was my first time to meet her.</span> 我约了一位摄影师，其实我之前并不认识她，这是第一次见面。",
+        "<span class='en'>We went to the seaside and took photos. We were very happy.</span> 我们去了海边拍照，非常开心。",
+        "金句收尾：<span class='en'>So when you feel bored, don't worry. Maybe happiness is waiting for you at the next moment.</span>",
+        "关键词：<span class='en'>a few days ago / seaside / photographer / boring / meaningful / happiness</span>",
+        "约某人：<span class='en'>ask somebody out</span>",
+        "不会说的词换简单表达：「陌生摄影师」→ <span class='en'>Actually I don't know her before.</span>",
+        "演讲中加入疑问句：<span class='en'>What ways can I make myself relax?</span>（疑问词 + 情态动词 can + 主语 + 动词原形）"
+      ]},
+      { h: "五、口语小贴士", type: "list", items: [
+        "每一遍说得不一样是好事，说明在思考表达，而不是死记硬背",
+        "情态动词没有过去式：<span class='en'>can / could</span> 都用原形，could 语气更委婉",
+        "<span class='en'>actually</span> 事实上，用来补充说明",
+        "已学单词在 app 里点发音跟读模仿，每天十几分钟",
+        "100 小时定律：任何技能投入 100 小时必有成效；利用碎片时间自言自语练口语"
+      ]},
+      { h: "六、课后作业", type: "homework", text: "把三篇稿子（自我介绍、介绍化学、旅行演讲）练到滚瓜烂熟：先背熟，再用自己的话复述，尽量流利不卡顿；继续每天背单词 15–30 分钟。下周见！" }
+    ]
+  },
   // ★★★ 新课程粘贴在这一行上方 ★★★
 ];
 
@@ -547,8 +597,84 @@ const WORDS = [
   { w:"experiment",  p:"/ɪkˈsperɪmənt/", m:"n. 实验",               e:"I did experiments in the lab." },
   { w:"major",       p:"/ˈmeɪdʒə/",      m:"n. 专业",               e:"This is my major." },
   { w:"medicine",    p:"/ˈmedɪsn/",      m:"n. 药物",               e:"It can help us make medicine." },
-  { w:"environment", p:"/ɪnˈvaɪrənmənt/",m:"n. 环境",               e:"It can also protect the environment." }
+  { w:"environment", p:"/ɪnˈvaɪrənmənt/",m:"n. 环境",               e:"It can also protect the environment." },
+  { w:"furniture",    p:"/ˈfɜːnɪtʃə/",   m:"n. 家具",            e:"The doors had been blocked by furniture." },
+  { w:"suggest",      p:"/səˈdʒest/",     m:"v. 建议",            e:"I suggested that some villagers might have come in." },
+  { w:"accept",       p:"/əkˈsept/",      m:"v. 接受",            e:"The villagers will not accept the pub." },
+  { w:"villager",     p:"/ˈvɪlɪdʒə/",     m:"n. 村民",            e:"The villagers will not accept the pub." },
+  { w:"photographer", p:"/fəˈtɒɡrəfə/",   m:"n. 摄影师",          e:"I asked a photographer out." },
+  { w:"seaside",      p:"/ˈsiːsaɪd/",     m:"n. 海边",            e:"We went to the seaside and took photos." },
+  { w:"beach",        p:"/biːtʃ/",        m:"n. 海滩",            e:"Do you know where the best beach in Shenzhen is?" },
+  { w:"stranger",     p:"/ˈstreɪndʒə/",   m:"n. 陌生人",          e:"She was a stranger, but we had a great time." },
+  { w:"meaningful",   p:"/ˈmiːnɪŋfl/",    m:"adj. 有意义的",      e:"It was a meaningful trip." },
+  { w:"boring",       p:"/ˈbɔːrɪŋ/",      m:"adj. 无聊的",        e:"I felt very bored a few days ago." },
+  { w:"actually",     p:"/ˈæktʃuəli/",    m:"adv. 事实上",        e:"Actually, I don't know her before." },
+  { w:"drive",        p:"/draɪv/",        m:"v. 开车",            e:"I drive my car to another city for my work." },
+  { w:"breakfast",    p:"/ˈbrekfəst/",    m:"n. 早餐",            e:"Today I got up early and had breakfast." },
+  { w:"lately",       p:"/ˈleɪtli/",      m:"adv. 最近",          e:"Lately, I have been very busy." }
   // ★★★ 新单词粘贴在这一行上方 ★★★
+];
+
+/* ================================================================
+   ★ 举一反三练习数据
+   pattern: 句型公式  items: 可替换的例子（带 🔈 发音）
+   ================================================================ */
+const DRILLS = [
+  { h: "句型一：主系表（描述状态）", pattern: "<span class='en'>主语 + is / am / are + 形容词 / 地点</span>", items: [
+    "<span class='en'>My home is a little far from the station.</span> 我家离地铁站有点远。",
+    "<span class='en'>My office is a little far from the subway.</span> 我办公室离地铁有点远。",
+    "<span class='en'>The airport is very far from my home.</span> 机场离我家很远。",
+    "<span class='en'>The new restaurant is very close to my office.</span> 新餐厅离我公司很近。",
+    "<span class='en'>Today I am very busy at work.</span> 我今天工作很忙。"
+  ]},
+  { h: "句型二：主谓宾（描述动作）", pattern: "<span class='en'>主语 + 动词 + 宾语 + （时间 / 地点）</span>", items: [
+    "<span class='en'>I drive my car to another city for my work.</span> 我开车去另一个城市上班。",
+    "<span class='en'>I take the subway to work every day.</span> 我每天坐地铁上班。",
+    "<span class='en'>She walks her dog in the park every morning.</span> 她每天早上在公园遛狗。",
+    "<span class='en'>We went to the seaside and took photos.</span> 我们去了海边拍照。",
+    "<span class='en'>He borrowed money from his friends.</span> 他向朋友借了钱。"
+  ]},
+  { h: "句型三：There be（有什么）", pattern: "<span class='en'>There is + 单数 / 不可数 · There are + 复数</span>", items: [
+    "<span class='en'>There are chemical reactions in the pot.</span> 锅里有化学反应。",
+    "<span class='en'>There is a new TV in my room.</span> 我房间里有一台新电视。",
+    "<span class='en'>There are many students in the classroom.</span> 教室里有很多学生。",
+    "<span class='en'>There is a strange noise coming from the bar.</span> 酒吧传来奇怪的声音。"
+  ]},
+  { h: "句型四：be made of（由……组成）", pattern: "<span class='en'>主语 + is / are made of + 材料 / 成分</span>", items: [
+    "<span class='en'>Water is made of hydrogen and oxygen.</span> 水由氢和氧组成。",
+    "<span class='en'>Salt is made of sodium and chlorine.</span> 盐由钠和氯组成。",
+    "<span class='en'>Paper is made of wood.</span> 纸由木头做成。",
+    "<span class='en'>This table is made of wood.</span> 这张桌子是木头的。"
+  ]},
+  { h: "句型五：used to（过去曾经）", pattern: "<span class='en'>主语 + used to be / do + …</span>", items: [
+    "<span class='en'>I used to be afraid of chemistry.</span> 我以前害怕化学。",
+    "<span class='en'>I used to be afraid of dogs.</span> 我以前害怕狗。",
+    "<span class='en'>He used to be very shy.</span> 他以前很害羞。",
+    "<span class='en'>She used to live in Beijing.</span> 她以前住在北京。"
+  ]},
+  { h: "句型六：特殊疑问句", pattern: "<span class='en'>疑问词 + did / do / does + 主语 + 动词原形</span>", items: [
+    "<span class='en'>What did you do during the holiday?</span> 假期你做了什么？",
+    "<span class='en'>What did you eat for breakfast?</span> 你早餐吃了什么？",
+    "<span class='en'>Where did you go yesterday?</span> 你昨天去哪了？",
+    "<span class='en'>How many photos did you take?</span> 你拍了多少张照片？",
+    "<span class='en'>How often do you exercise?</span> 你多久锻炼一次？"
+  ]},
+  { h: "句型七：情态动词（客气请求）", pattern: "<span class='en'>Can I…? / Could you…? / Would you like…? / Shall we…?</span>", items: [
+    "<span class='en'>Can I open the window?</span> 我能开窗吗？",
+    "<span class='en'>Could you come a little earlier?</span> 你能早点来吗？",
+    "<span class='en'>Would you like a cup of tea?</span> 你想喝杯茶吗？",
+    "<span class='en'>Would you like to have dinner with me?</span> 你愿意和我吃晚饭吗？",
+    "<span class='en'>Shall we take a walk?</span> 我们去散步吧？"
+  ]},
+  { h: "句型八：演讲金句仿写", pattern: "<span class='en'>So when you feel…, don't worry. Maybe… is waiting for you.</span>", items: [
+    "<span class='en'>So when you feel bored, don't worry. Maybe happiness is waiting for you at the next moment.</span>",
+    "<span class='en'>So when you feel tired, don't give up. Maybe success is waiting for you at the next corner.</span>",
+    "<span class='en'>So when you feel sad, don't cry. Maybe good luck is waiting for you tomorrow.</span>"
+  ]},
+  { h: "句型九：日常三句话模板", pattern: "<span class='en'>Today I…, so I…, but… / Tomorrow I will…, but I still need to…</span>", items: [
+    "<span class='en'>Today I got up early and had breakfast. Then I walked my dog, so I feel good. But in the afternoon I drove to another city, so I feel tired now.</span>",
+    "<span class='en'>Tomorrow I have a rest day and I just want to make myself relax, but I still need to walk my dog, so I should get up early.</span>"
+  ]}
 ];
 
 /* ================================================================
@@ -626,6 +752,12 @@ function homePage(){
       <div class="meta">每天坚持读一遍 🌱</div>
       <div class="arrow">→</div>
     </div>
+    <div class="lesson-card" onclick="go('#/drills')">
+      <div class="no">${DRILLS.length} 个句型</div>
+      <h3>一个句型换着花样说</h3>
+      <div class="meta">跟读仿写，举一反三地用 🔄</div>
+      <div class="arrow">→</div>
+    </div>
   </div>
   <footer>Made with ❤️ for ${SITE.studentName}</footer>`;
 }
@@ -685,6 +817,22 @@ function lessonPage(id){
   </div>`;
 }
 
+function drillsPage(){
+  return `
+  <div class="crumb" style="padding-top:20px;">${backHome()}</div>
+  <div class="lesson-head">
+    <h1>🔄 举一反三练习</h1>
+    <div class="meta">同一个句型，换词套着用 · 点 🔈 跟读，再自己仿写 2 句</div>
+  </div>
+  ${DRILLS.map(d=>`
+    <div class="block">
+      <h2><span class="dot"></span>${d.h}</h2>
+      <div style="background:#fff7ed; border-radius:10px; padding:8px 12px; font-size:14px; margin-bottom:6px;">${d.pattern}</div>
+      ${d.items.map(it=>`<div class="sline">${it}${sayBtn(stripEn(it))}</div>`).join("")}
+    </div>`).join("")}
+  <footer style="text-align:center; color:#c4ad8e; font-size:12.5px; padding:20px 0;">每天挑 2 个句型，自己仿写并大声读出来 🌱</footer>`;
+}
+
 function wordsPage(filter=""){
   const f = filter.trim().toLowerCase();
   const list = WORDS.filter(w=>!f || w.w.toLowerCase().includes(f) || w.m.includes(f));
@@ -738,6 +886,9 @@ function route(){
   if(h.startsWith("#/lesson/")){
     app.innerHTML = lessonPage(parseInt(h.split("/")[2]));
     document.querySelector('[data-route="home"]').classList.add("active");
+  }else if(h.startsWith("#/drills")){
+    app.innerHTML = drillsPage();
+    document.querySelector('[data-route="drills"]').classList.add("active");
   }else if(h.startsWith("#/words")){
     app.innerHTML = wordsPage();
     document.querySelector('[data-route="words"]').classList.add("active");
