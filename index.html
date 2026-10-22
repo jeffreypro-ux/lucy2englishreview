@@ -196,16 +196,15 @@
 </style>
 <base target="_blank">
 </head>
-<body id="top">
+<body>
 
 <header>
   <div class="nav">
-    <div class="logo">📚 <span id="siteName">Lucy 的英语复习站</span></div>
+    <div class="logo" onclick="go('#/')">📚 <span id="siteName">Lucy 的英语复习站</span></div>
     <nav class="navlinks">
-      <a href="#top">首页</a>
-      <a href="#lessons">课程笔记</a>
-      <a href="#drills">举一反三</a>
-      <a href="#words">生词本</a>
+      <a href="#/" onclick="go('#/')" data-route="home">首页</a>
+      <a href="#/drills" onclick="go('#/drills')" data-route="drills">举一反三</a>
+      <a href="#/words" onclick="go('#/words')" data-route="words">生词本</a>
     </nav>
   </div>
 </header>
@@ -811,7 +810,7 @@ const DRILLS = [
 ];
 
 /* ================================================================
-   下面是网站程序，一般不需要修改
+   下面是网站程序，一般不需要修改（单文件运行，无需服务器）
    ================================================================ */
 const store = (()=>{ try{ localStorage.getItem("__t"); return localStorage; }catch(e){ const m={}; return { getItem:k=>(k in m?m[k]:null), setItem:(k,v)=>{m[k]=String(v);} }; } })();
 const app = document.getElementById("app");
@@ -849,9 +848,61 @@ function sayBtn(text, audio){
   return `<button class="say" onclick="speak('${t}'${a})" title="播放发音"><span class="ico">🔈</span></button>`;
 }
 function stripEn(s){ return s.replace(/<[^>]+>/g,""); }
+function backHome(){ return `<a href="#/" onclick="go('#/');return false;">← 返回首页</a>`; }
 
-function lessonBlocks(l){
-  return l.sections.map(s=>{
+/* ---------- 首页 ---------- */
+function homePage(){
+  const done = JSON.parse(store.getItem("lessonsDone")||"{}");
+  return `
+  <div class="hero">
+    <div class="mascot">${SITE.mascot}</div>
+    <div class="hi">WELCOME BACK</div>
+    <h1>${SITE.studentName}的英语复习站</h1>
+    <p>${SITE.teacherLine}</p>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>${LESSONS.length}</b><span>课程</span></div>
+    <div class="stat"><b>${Object.keys(done).length}</b><span>已复习</span></div>
+    <div class="stat"><b>${WORDS.length}</b><span>生词</span></div>
+    <div class="stat"><b>${DRILLS.length}</b><span>句型</span></div>
+  </div>
+  <h2 class="section-title">📖 课程笔记</h2>
+  <div class="grid">
+    ${LESSONS.map(l=>`
+      <div class="lesson-card" onclick="go('#/lesson/${l.id}')">
+        <div class="no">第 ${l.id} 课</div>
+        <h3>${l.title.replace(/^第.课：?/,"")}</h3>
+        <div class="meta">${l.date} · ${l.subtitle||""} ${done[l.id]?"✅":""}</div>
+        <div class="arrow">→</div>
+      </div>`).join("")}
+  </div>
+  <h2 class="section-title">🛠 练习工具</h2>
+  <div class="grid">
+    <div class="lesson-card" onclick="go('#/drills')">
+      <div class="no">${DRILLS.length} 个句型</div>
+      <h3>举一反三 · 跟读仿写</h3>
+      <div class="meta">一个句型换着花样说 🔄</div>
+      <div class="arrow">→</div>
+    </div>
+    <div class="lesson-card" onclick="go('#/words')">
+      <div class="no">${WORDS.length} 个单词</div>
+      <h3>生词本 · 发音例句</h3>
+      <div class="meta">每天坚持读一遍 🌱</div>
+      <div class="arrow">→</div>
+    </div>
+  </div>
+  <footer>Made with ❤️ for ${SITE.studentName}</footer>`;
+}
+
+/* ---------- 课程页 ---------- */
+function lessonPage(id){
+  const l = LESSONS.find(x=>x.id===id);
+  if(!l) return `<div class="empty">没有找到这一课 😢<br><br><a href="#/" style="color:var(--brand)">← 返回首页</a></div>`;
+  const idx = LESSONS.indexOf(l);
+  const prev = LESSONS[idx-1], next = LESSONS[idx+1];
+  const done = JSON.parse(store.getItem("lessonsDone")||"{}");
+
+  const blocks = l.sections.map(s=>{
     if(s.type==="list"){
       return `<div class="block"><h2><span class="dot"></span>${s.h}</h2>
         ${s.items.map(it=>{
@@ -875,77 +926,63 @@ function lessonBlocks(l){
       </div>`;
     }
     if(s.type==="homework"){
-      const done = JSON.parse(store.getItem("lessonsDone")||"{}");
       return `<div class="block homework"><h2><span class="dot"></span>${s.h}</h2>
         <p>${s.text}</p>
-        <button class="done-btn ${done[l.id]?'off':''}" id="done${l.id}" onclick="toggleDone(${l.id})">
+        <button class="done-btn ${done[l.id]?'off':''}" onclick="toggleDone(${l.id})">
           ${done[l.id]?"✓ 已完成复习":"我复习完啦"}
         </button>
       </div>`;
     }
     return "";
   }).join("");
+
+  return `
+  <div class="crumb">${backHome()}</div>
+  <div class="lesson-head">
+    <span class="no">第 ${l.id} 课</span>
+    <h1>${l.title}</h1>
+    <div class="meta">📅 ${l.date} &nbsp;·&nbsp; ${l.subtitle||""}</div>
+  </div>
+  ${blocks}
+  <div class="pager">
+    ${prev?`<a href="#/lesson/${prev.id}" onclick="go('#/lesson/${prev.id}');return false;">← 第 ${prev.id} 课</a>`:"<span></span>"}
+    ${next?`<a href="#/lesson/${next.id}" onclick="go('#/lesson/${next.id}');return false;">第 ${next.id} 课 →</a>`:"<span></span>"}
+  </div>`;
 }
 
-function renderAll(){
-  const done = JSON.parse(store.getItem("lessonsDone")||"{}");
-  app.innerHTML = `
-  <div class="hero">
-    <div class="mascot">${SITE.mascot}</div>
-    <div class="hi">WELCOME BACK</div>
-    <h1>${SITE.studentName}的英语复习站</h1>
-    <p>${SITE.teacherLine}</p>
+/* ---------- 举一反三页 ---------- */
+function drillsPage(){
+  return `
+  <div class="crumb" style="padding-top:20px;">${backHome()}</div>
+  <div class="lesson-head">
+    <h1>🔄 举一反三练习</h1>
+    <div class="meta">同一个句型，换词套着用 · 点 🔈 跟读，再自己仿写 2 句</div>
   </div>
-  <div class="stats">
-    <div class="stat"><b>${LESSONS.length}</b><span>课程</span></div>
-    <div class="stat"><b>${Object.keys(done).length}</b><span>已复习</span></div>
-    <div class="stat"><b>${WORDS.length}</b><span>生词</span></div>
-    <div class="stat"><b>${DRILLS.length}</b><span>句型</span></div>
-  </div>
-
-  <section id="lessons">
-    <h2 class="section-title">📖 课程笔记 <span style="font-size:12.5px; color:var(--sub); font-weight:400;">（点下方标签快速跳转）</span></h2>
-    <div class="chips">
-      ${LESSONS.map(l=>`<a class="chip" href="#lesson-${l.id}">第 ${l.id} 课 ${l.title.replace(/^第.课：?/,"")}</a>`).join("")}
-    </div>
-    ${LESSONS.map(l=>`
-      <div class="lesson-sec" id="lesson-${l.id}">
-        <div class="lesson-head">
-          <span class="no">第 ${l.id} 课</span>
-          <h1>${l.title} ${done[l.id]?"✅":""}</h1>
-          <div class="meta">📅 ${l.date} &nbsp;·&nbsp; ${l.subtitle||""}</div>
-        </div>
-        ${lessonBlocks(l)}
-      </div>`).join("")}
-  </section>
-
-  <section id="drills">
-    <h2 class="section-title">🔄 举一反三练习</h2>
-    <div class="lesson-head"><div class="meta">同一个句型，换词套着用 · 点 🔈 跟读，再自己仿写 2 句</div></div>
-    ${DRILLS.map(d=>`
-      <div class="block">
-        <h2><span class="dot"></span>${d.h}</h2>
-        <div style="background:#fff7ed; border-radius:10px; padding:8px 12px; font-size:14px; margin-bottom:6px;">${d.pattern}</div>
-        ${d.items.map(it=>`<div class="sline">${it}${sayBtn(stripEn(it))}</div>`).join("")}
-      </div>`).join("")}
-  </section>
-
-  <section id="words">
-    <h2 class="section-title">🔤 生词本</h2>
-    <div class="lesson-head"><div class="meta">共 ${WORDS.length} 个单词 · 点 🔈 听发音</div></div>
-    <div class="search-row">
-      <input class="search" id="wordSearch" placeholder="搜索单词或中文意思…" value="" oninput="renderWords(this.value)">
-    </div>
-    <div id="wordList">${wordListHTML("")}</div>
-  </section>
-
-  <footer>Made with ❤️ for ${SITE.studentName}</footer>`;
+  ${DRILLS.map(d=>`
+    <div class="block">
+      <h2><span class="dot"></span>${d.h}</h2>
+      <div style="background:#fff7ed; border-radius:10px; padding:8px 12px; font-size:14px; margin-bottom:6px;">${d.pattern}</div>
+      ${d.items.map(it=>`<div class="sline">${it}${sayBtn(stripEn(it))}</div>`).join("")}
+    </div>`).join("")}
+  <footer style="text-align:center; color:#c4ad8e; font-size:12.5px; padding:20px 0;">每天挑 2 个句型，自己仿写并大声读出来 🌱</footer>`;
 }
 
-function wordListHTML(filter){
+/* ---------- 生词本页 ---------- */
+function wordsPage(filter=""){
   const f = filter.trim().toLowerCase();
   const list = WORDS.filter(w=>!f || w.w.toLowerCase().includes(f) || w.m.includes(f));
-  return list.length ? list.map(w=>`
+  const fv = filter.replace(/"/g,"&quot;");
+  return `
+  <div class="crumb" style="padding-top:20px;">${backHome()}</div>
+  <div class="lesson-head">
+    <h1>🔤 生词本</h1>
+    <div class="meta">共 ${WORDS.length} 个单词 · 点 🔈 听发音</div>
+  </div>
+  <div class="search-row">
+    <input class="search" id="wordSearch" placeholder="搜索单词或中文意思…" value="${fv}" oninput="renderWords(this.value)">
+  </div>
+  <div id="wordList">
+    ${list.length ? list.map(w=>`
       <div class="word-card">
         <div class="word-main">
           <div class="word-top">
@@ -957,11 +994,14 @@ function wordListHTML(filter){
           <div class="word-e">${w.e||""}${w.e?sayBtn(w.e):""}</div>
         </div>
       </div>`).join("")
-    : `<div class="empty">没有找到相关单词 😢</div>`;
+    : `<div class="empty">没有找到相关单词 😢</div>`}
+  </div>`;
 }
 
 function renderWords(v){
-  document.getElementById("wordList").innerHTML = wordListHTML(v);
+  const tmp = document.createElement("div");
+  tmp.innerHTML = wordsPage(v);
+  document.getElementById("wordList").innerHTML = tmp.querySelector("#wordList").innerHTML;
   const input = document.getElementById("wordSearch");
   input.focus(); input.setSelectionRange(input.value.length, input.value.length);
 }
@@ -970,15 +1010,32 @@ function toggleDone(id){
   const done = JSON.parse(store.getItem("lessonsDone")||"{}");
   if(done[id]) delete done[id]; else done[id]=true;
   store.setItem("lessonsDone", JSON.stringify(done));
-  const btn = document.getElementById("done"+id);
-  if(btn){
-    btn.classList.toggle("off", !!done[id]);
-    btn.textContent = done[id] ? "✓ 已完成复习" : "我复习完啦";
-  }
-  renderAll();
-  document.getElementById("lesson-"+id).scrollIntoView({behavior:"smooth"});
+  route();
 }
 
+/* ---------- 路由 ---------- */
+function go(h){ location.hash = h; }
+function route(){
+  const h = location.hash || "#/";
+  document.querySelectorAll(".navlinks a").forEach(a=>a.classList.remove("active"));
+  if(h.startsWith("#/lesson/")){
+    app.innerHTML = lessonPage(parseInt(h.split("/")[2]));
+    document.querySelector('[data-route="home"]').classList.add("active");
+  }else if(h.startsWith("#/drills")){
+    app.innerHTML = drillsPage();
+    document.querySelector('[data-route="drills"]').classList.add("active");
+  }else if(h.startsWith("#/words")){
+    app.innerHTML = wordsPage();
+    document.querySelector('[data-route="words"]').classList.add("active");
+  }else{
+    app.innerHTML = homePage();
+    document.querySelector('[data-route="home"]').classList.add("active");
+  }
+  window.scrollTo(0,0);
+}
+window.addEventListener("hashchange", route);
+
+/* ---------- 声音设置 ---------- */
 function fillVoices(){
   const sel = document.getElementById("voiceSel");
   const voices = speechSynthesis.getVoices();
@@ -1004,7 +1061,7 @@ loadSettings();
 document.getElementById("rateRange").value = RATE;
 document.getElementById("rateVal").textContent = RATE.toFixed(1);
 if(speechSynthesis.onvoiceschanged!==undefined) speechSynthesis.onvoiceschanged = fillVoices;
-renderAll();
+route();
 </script>
 </body>
 </html>
