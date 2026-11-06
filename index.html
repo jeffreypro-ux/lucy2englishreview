@@ -37,6 +37,7 @@
   }
   .navlinks a:hover{background:var(--soft); color:var(--brand);}
   .navlinks a.active{background:var(--brand); color:#fff; font-weight:700;}
+  .navlinks a.replay{background:linear-gradient(135deg,#f59e0b,#f97316); color:#fff; font-weight:700;}
 
   /* ===== 首页 ===== */
   .hero{padding:44px 6px 10px; text-align:center;}
@@ -62,6 +63,8 @@
     border:2px solid transparent; position:relative;
   }
   .lesson-card:hover{transform:translateY(-3px); box-shadow:0 10px 26px rgba(180,120,60,.18); border-color:#fed7aa;}
+  .replay-card{background:linear-gradient(135deg,#fff7ed,#ffedd5); border:2px solid #fed7aa;}
+  .replay-card:hover{border-color:#fb923c;}
   .lesson-card .no{
     display:inline-block; background:var(--soft); color:var(--brand);
     font-size:12px; font-weight:800; padding:2px 10px; border-radius:999px; margin-bottom:8px;
@@ -203,6 +206,7 @@
     <div class="logo" onclick="go('#/')">📚 <span id="siteName">Lucy 的英语复习站</span></div>
     <nav class="navlinks">
       <a href="#/" onclick="go('#/')" data-route="home">首页</a>
+      <a class="replay" href="https://my.feishu.cn/drive/folder/I5Hmf7gAgl50d9dOGvBcOMYznSc" target="_blank" rel="noopener">📼 课程回放</a>
       <a href="#/drills" onclick="go('#/drills')" data-route="drills">举一反三</a>
       <a href="#/words" onclick="go('#/words')" data-route="words">生词本</a>
     </nav>
@@ -669,6 +673,42 @@ const LESSONS = [
       { h: "五、课后作业", type: "homework", text: "练熟「Describe Your Best Friend」演讲，直到脱稿流利；把想说说不出的话记下来问 Mike 老师（积累成自己的词库）；每天 1 小时：单词 + 笔记 + 朗读；记得交作业！下节课时间待课表确定。" }
     ]
   },
+  {
+    id: 9,
+    date: "2026-11-05",
+    title: "第九课：友谊话题畅谈",
+    subtitle: "Mike 老师 · 全英聊天 · 品质观点表达",
+    sections: [
+      { h: "一、课前表达：看中医", type: "list", items: [
+        "<span class='en'>I went to see a doctor of traditional Chinese medicine (TCM) to make my body healthy.</span> 我去看了中医，调理身体。",
+        "<span class='en'>TCM = Traditional Chinese Medicine</span> 中医（首字母缩写，和老外说直接讲 TCM）",
+        "<span class='en'>traditional</span> 传统的 · <span class='en'>body</span> 身体"
+      ]},
+      { h: "二、复习（第八课复述 ✅）", type: "list", items: [
+        "Best Friend 演讲复述 —— 流利完成",
+        "接人：<span class='en'>I went to the station and picked him up.</span>（先说车站，再说接他）",
+        "AI 演讲复述 —— 状语从句 if / because / when 都用上了"
+      ]},
+      { h: "三、友谊话题：最重要的品质（成段必背）", type: "list", items: [
+        "<span class='en'>I think the same feelings is the most valued quality in friendship.</span> 我认为相同的感受是友谊里最看重的品质。",
+        "<span class='en'>Because in the same thing, it means we have the same feelings and we have the same decisions.</span> 因为在同一件事上，这意味着我们有相同的感受和相同的决定。",
+        "<span class='en'>If we don't, we will easily have different opinions, so our friendship won't be stable.</span> 如果不这样，我们很容易产生分歧，友谊就不会稳定。",
+        "语言点：<span class='en'>quality</span> 品质 · <span class='en'>value most</span> 最看重 · <span class='en'>it means…</span> 这意味着 · <span class='en'>if we don't</span> 如果不这样（省略式）· <span class='en'>different opinions</span> 分歧 · <span class='en'>stable</span> 稳定的"
+      ]},
+      { h: "四、延伸讨论：朋友犯错要不要说真话？", type: "list", items: [
+        "<span class='en'>If she is my close friend, in my opinion, if I feel it's not proper, I will point it out.</span> 如果她是我的好朋友，在我看来，如果觉得不合适，我会指出来。",
+        "<span class='en'>And if she doesn't, we will drift apart.</span> 如果她不改变，我们会渐行渐远。",
+        "语言点：<span class='en'>close friend</span> 亲近的朋友 · <span class='en'>in my opinion</span> 在我看来 · <span class='en'>proper</span> 合适的 · <span class='en'>point out</span> 指出 · <span class='en'>drift apart</span> 渐行渐远（drift 漂 + apart 分开）"
+      ]},
+      { h: "五、口语小贴士", type: "list", items: [
+        "不追求直译：同理心 → <span class='en'>the same feelings</span>；渐行渐远 → <span class='en'>drift apart</span>",
+        "省略式很好用：<span class='en'>if we don't / if she doesn't</span>（不用重复前面的动词）",
+        "<span class='en'>won't be / would be + 形容词</span> 描述「会变成什么样」",
+        "大脑已经会了，卡的是口腔肌肉——交给时间，持续强化练习"
+      ]},
+      { h: "六、课后作业", type: "homework", text: "把「友谊品质」段落练熟直到脱稿；尝试把 best friend、品质、指出错误三个话题串成一段话；每天复习笔记网站。" }
+    ]
+  }
   // ★★★ 新课程粘贴在这一行上方 ★★★
 ];
 
@@ -774,7 +814,17 @@ const WORDS = [
   { w:"accordingly",p:"/əˈkɔːdɪŋli/",   m:"adv. 相应地",            e:"He will change accordingly." },
   { w:"precious",   p:"/ˈpreʃəs/",      m:"adj. 珍贵的",            e:"Our friendship is very precious." },
   { w:"each other", p:"/iːtʃ ˈʌðə/",    m:"phr. 互相，彼此",        e:"We have known each other for four years." },
-  { w:"match",      p:"/mætʃ/",         m:"n. 般配的人，匹配",        e:"We are a good match." }
+  { w:"match",      p:"/mætʃ/",         m:"n. 般配的人，匹配",        e:"We are a good match." },
+  { w:"traditional",   p:"/trəˈdɪʃənl/",     m:"adj. 传统的",            e:"Traditional Chinese Medicine (TCM)" },
+  { w:"quality",       p:"/ˈkwɒləti/",       m:"n. 品质",                e:"The most valued quality in friendship." },
+  { w:"value",         p:"/ˈvæljuː/",        m:"v. 看重，珍视",          e:"I value honesty most in friendship." },
+  { w:"decision",      p:"/dɪˈsɪʒn/",        m:"n. 决定",                e:"We have the same feelings and the same decisions." },
+  { w:"opinion",       p:"/əˈpɪnjən/",       m:"n. 意见，看法",          e:"We will easily have different opinions." },
+  { w:"stable",        p:"/ˈsteɪbl/",        m:"adj. 稳定的",            e:"Our friendship won't be stable." },
+  { w:"proper",        p:"/ˈprɒpə/",         m:"adj. 合适的，恰当的",    e:"If I feel it's not proper, I will point it out." },
+  { w:"point out",     p:"/pɔɪnt aʊt/",      m:"phr. 指出",              e:"I will point it out." },
+  { w:"close friend",  p:"/kləʊz frend/",    m:"phr. 亲近的朋友",        e:"If she is my close friend…" },
+  { w:"drift apart",   p:"/drɪft əˈpɑːt/",   m:"phr. 渐行渐远",          e:"If she doesn't, we will drift apart." }
   // ★★★ 新单词粘贴在这一行上方 ★★★
 ];
 
@@ -919,6 +969,16 @@ function homePage(){
     <div class="stat"><b>${WORDS.length}</b><span>生词</span></div>
     <div class="stat"><b>${DRILLS.length}</b><span>句型</span></div>
   </div>
+  <h2 class="section-title">📼 课程回放</h2>
+  <div class="grid">
+    <div class="lesson-card replay-card" onclick="window.open(SITE.replayUrl,'_blank')">
+      <div class="no" style="background:#ffedd5; color:#ea580c;">飞书回放文件夹</div>
+      <h3>点这里看每节课录像 📼</h3>
+      <div class="meta">下课后第二天更新 · 配合笔记复习效果更好</div>
+      <div class="arrow">→</div>
+    </div>
+  </div>
+
   <h2 class="section-title">📖 课程笔记</h2>
   <div class="grid">
     ${LESSONS.map(l=>`
@@ -944,7 +1004,7 @@ function homePage(){
       <div class="arrow">→</div>
     </div>
   </div>
-  <footer>Made with ❤️ for ${SITE.studentName}</footer>`;
+  <footer>为 ${SITE.studentName} 的英语学习而做</footer>`;
 }
 
 /* ---------- 课程页 ---------- */
