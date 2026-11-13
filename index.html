@@ -189,6 +189,41 @@
   }
   .chip:hover{background:var(--brand); color:#fff;}
   .lesson-sec{margin-bottom:36px;}
+
+  /* ===== 计时训练 ===== */
+  .lvls{display:flex; gap:8px; flex-wrap:wrap;}
+  .lvl{padding:7px 16px; border-radius:999px; border:2px solid #f3ddc2; background:#fff; font-weight:800; color:var(--sub); cursor:pointer; font-size:15px;}
+  .lvl.on{background:var(--brand); border-color:var(--brand); color:#fff;}
+  .topic-chip{padding:7px 14px; border-radius:999px; border:2px solid #f3ddc2; background:#fff; font-size:13.5px; font-weight:700; color:var(--sub); cursor:pointer;}
+  .topic-chip.on{background:var(--soft); border-color:var(--brand); color:var(--brand);}
+  .topic-input{width:100%; margin-top:10px; padding:10px 14px; border:2px solid #f3ddc2; border-radius:12px; font-size:14px; outline:none;}
+  .ring-wrap{position:relative; width:240px; height:240px; margin:10px auto;}
+  .ring-wrap svg{width:100%; height:100%; transform:rotate(-90deg);}
+  .ring-bg{fill:none; stroke:#f5e3cf; stroke-width:12;}
+  .ring-fg{fill:none; stroke:var(--brand); stroke-width:12; stroke-linecap:round; transition:stroke .3s;}
+  .ring-wrap.warn .ring-fg{stroke:#f59e0b;}
+  .ring-wrap.danger .ring-fg{stroke:#ef4444;}
+  .ring-wrap.danger{animation:pulse .5s infinite alternate;}
+  @keyframes pulse{from{transform:scale(1);}to{transform:scale(1.03);}}
+  .t-time{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:52px; font-weight:800; color:var(--ink); font-variant-numeric:tabular-nums;}
+  .stages{display:flex; justify-content:center; gap:8px; margin:12px 0;}
+  .stage{padding:6px 14px; border-radius:999px; background:#f5ead9; color:var(--sub); font-size:13px; font-weight:700; transition:.3s;}
+  .stage.on{background:var(--brand); color:#fff; transform:scale(1.06);}
+  .stage.done{background:#dcfce7; color:#15803d;}
+  .t-btns{display:flex; justify-content:center; gap:10px; margin:14px 0 8px; flex-wrap:wrap;}
+  .t-btn{padding:11px 26px; border:none; border-radius:999px; font-size:15px; font-weight:800; cursor:pointer;}
+  .t-btn.main{background:var(--brand); color:#fff; box-shadow:0 6px 16px rgba(249,115,22,.35);}
+  .t-btn.ghost{background:var(--soft); color:var(--brand);}
+  .t-btn.rec{background:#fee2e2; color:#dc2626;}
+  .t-btn.rec.on{background:#dc2626; color:#fff; animation:pulse .8s infinite alternate;}
+  .t-rounds{text-align:center; font-size:14px; color:var(--sub); margin-top:8px;}
+  .t-rounds b{color:var(--brand);}
+  .t-dots{font-size:18px; letter-spacing:4px;}
+  .t-msg{text-align:center; min-height:26px; font-weight:700; color:var(--green); margin-top:6px;}
+  .t-playback{text-align:center; margin-top:10px;}
+  .t-playback audio{width:100%; max-width:320px;}
+  .navlinks{flex-wrap:wrap;}
+
   footer{text-align:center; color:#c4ad8e; font-size:12.5px; padding:40px 0 0;}
 
   @media (max-width:560px){
@@ -207,6 +242,7 @@
     <nav class="navlinks">
       <a href="#/" onclick="go('#/')" data-route="home">首页</a>
       <a class="replay" href="https://my.feishu.cn/drive/folder/I5Hmf7gAgl50d9dOGvBcOMYznSc" target="_blank" rel="noopener">📼 课程回放</a>
+      <a href="#/timer" onclick="go('#/timer')" data-route="timer">⏱ 计时训练</a>
       <a href="#/drills" onclick="go('#/drills')" data-route="drills">举一反三</a>
       <a href="#/words" onclick="go('#/words')" data-route="words">生词本</a>
     </nav>
@@ -1150,6 +1186,12 @@ function homePage(){
   </div>
   <h2 class="section-title">🛠 练习工具</h2>
   <div class="grid">
+    <div class="lesson-card" onclick="go('#/timer')">
+      <div class="no">30 秒挑战</div>
+      <h3>⏱ 计时训练 · 开口说</h3>
+      <div class="meta">选话题定时长 · 练满 3 轮 🎙</div>
+      <div class="arrow">→</div>
+    </div>
     <div class="lesson-card" onclick="go('#/drills')">
       <div class="no">${DRILLS.length} 个句型</div>
       <h3>举一反三 · 跟读仿写</h3>
@@ -1221,6 +1263,216 @@ function lessonPage(id){
   </div>`;
 }
 
+/* ---------- 计时训练页 ---------- */
+const TOPICS = [
+  "Keep in touch with old friends",
+  "Describe your best friend",
+  "A skill you want to learn",
+  "How to keep healthy",
+  "Your favorite way to relax",
+  "Will AI take your job?"
+];
+const T = {
+  total: 30, left: 30, running: false, end: 0, int: null,
+  topic: TOPICS[0],
+  rounds: JSON.parse(store.getItem("timerRounds")||"{}"),
+  recorder: null, chunks: [], stream: null, recording: false,
+};
+const RC = 2 * Math.PI * 100; // 圆环周长（r=100）
+
+function tRoundsOf(topic){ return T.rounds[topic] || 0; }
+
+function timerPage(){
+  const lv = [60, 50, 40, 30, 25];
+  return `
+  <div class="crumb" style="padding-top:20px;">${backHome()}</div>
+  <div class="lesson-head">
+    <h1>⏱ 流利度计时训练</h1>
+    <div class="meta">课堂上练过的方法 · 选话题 → 定时长 → 开口说 → 练满 3 轮</div>
+  </div>
+
+  <div class="block">
+    <h2><span class="dot"></span>1. 选话题</h2>
+    <div class="chips" style="margin-bottom:0;">
+      ${TOPICS.map(t=>`<span class="topic-chip ${t===T.topic?'on':''}" onclick="setTopic('${jsStr(t)}')">${t}</span>`).join("")}
+    </div>
+    <input class="topic-input" id="tCustom" placeholder="自定义话题…" onchange="setTopic(this.value||T.topic)">
+  </div>
+
+  <div class="block">
+    <h2><span class="dot"></span>2. 定时长（从长到短逐步压缩）</h2>
+    <div class="lvls">
+      ${lv.map(s=>`<span class="lvl ${s===T.total?'on':''}" onclick="setLevel(${s})">${s} 秒</span>`).join("")}
+    </div>
+  </div>
+
+  <div class="block" style="text-align:center;">
+    <div class="ring-wrap" id="tRing">
+      <svg viewBox="0 0 240 240">
+        <circle class="ring-bg" cx="120" cy="120" r="100"></circle>
+        <circle class="ring-fg" id="tFg" cx="120" cy="120" r="100" stroke-dasharray="${RC}" stroke-dashoffset="0"></circle>
+      </svg>
+      <div class="t-time" id="tTime">${T.total.toFixed(1)}</div>
+    </div>
+    <div class="stages">
+      <span class="stage" id="st0">① 亮出重点</span>
+      <span class="stage" id="st1">② 展开细节</span>
+      <span class="stage" id="st2">③ 收尾锁句</span>
+    </div>
+    <div class="t-btns">
+      <button class="t-btn main" id="tStart" onclick="startPause()">▶ 开始</button>
+      <button class="t-btn ghost" onclick="resetTimer()">↺ 重置</button>
+      <button class="t-btn rec" id="tRec" onclick="toggleRec()">🎙 录下自己</button>
+    </div>
+    <div class="t-rounds" id="tRounds"></div>
+    <div class="t-msg" id="tMsg"></div>
+    <div class="t-playback" id="tPlayback"></div>
+  </div>
+
+  <div class="block">
+    <h2><span class="dot"></span>方法提示</h2>
+    <div class="sline">把总时间分三份：<b>前 1/3 亮重点 → 中间 1/3 展开 → 最后 1/3 必须收尾</b>（圆环上方的三段灯会实时提醒你走到哪一步）</div>
+    <div class="sline">同一个话题<b>练满 3 轮</b>，「说三次就熟了」——计时中<b>不看笔记</b>，说完再翻笔记对比</div>
+    <div class="sline">说完一轮点一下 🎙 录音回放，听自己的卡顿在哪里，下一轮改进</div>
+    <div class="sline">能稳定说完后，把时长降一档（如 30 秒 → 25 秒），继续挑战</div>
+  </div>`;
+}
+
+function tRefreshRounds(){
+  const r = tRoundsOf(T.topic);
+  const el = document.getElementById("tRounds");
+  if(!el) return;
+  el.innerHTML = `「${T.topic}」已完成 <b>${r}</b> / 3 轮 &nbsp; <span class="t-dots">${"●".repeat(r)}${"○".repeat(3-Math.min(r,3))}</span>`;
+}
+
+function setTopic(t){
+  T.topic = t.trim() || TOPICS[0];
+  stopRec(true);
+  timerCleanup();
+  T.left = T.total;
+  route(); // 重新渲染选中态
+  tRefreshRounds();
+}
+function setLevel(s){
+  T.total = s; T.left = s;
+  stopRec(true);
+  timerCleanup();
+  route();
+  tRefreshRounds();
+}
+
+function startPause(){
+  if(T.running){
+    clearInterval(T.int);
+    T.left = Math.max(0, (T.end - Date.now())/1000);
+    T.running = false;
+    document.getElementById("tStart").textContent = "▶ 继续";
+    return;
+  }
+  T.end = Date.now() + T.left*1000;
+  T.running = true;
+  document.getElementById("tStart").textContent = "⏸ 暂停";
+  document.getElementById("tMsg").textContent = "";
+  T.int = setInterval(tTick, 100);
+}
+function tTick(){
+  T.left = Math.max(0, (T.end - Date.now())/1000);
+  tDraw();
+  if(T.left <= 0) finishTimer();
+}
+function tDraw(){
+  const fg = document.getElementById("tFg");
+  const tm = document.getElementById("tTime");
+  const ring = document.getElementById("tRing");
+  if(!fg) return;
+  fg.style.strokeDashoffset = RC * (1 - T.left / T.total);
+  tm.textContent = T.left.toFixed(1);
+  ring.classList.toggle("warn", T.left <= 10 && T.left > 5);
+  ring.classList.toggle("danger", T.left <= 5);
+  // 三段进度
+  const elapsed = T.total - T.left;
+  const stage = elapsed < T.total/3 ? 0 : elapsed < T.total*2/3 ? 1 : 2;
+  for(let i=0;i<3;i++){
+    const el = document.getElementById("st"+i);
+    if(!el) continue;
+    el.classList.toggle("on", i===stage && T.running);
+    el.classList.toggle("done", i<stage);
+  }
+}
+function finishTimer(){
+  clearInterval(T.int);
+  T.running = false;
+  T.left = T.total;
+  stopRec(false);
+  beep();
+  T.rounds[T.topic] = Math.min(3, tRoundsOf(T.topic) + 1);
+  store.setItem("timerRounds", JSON.stringify(T.rounds));
+  document.getElementById("tStart").textContent = "▶ 再来一轮";
+  const r = tRoundsOf(T.topic);
+  document.getElementById("tMsg").textContent = r >= 3 ? "🎉 这个话题练满 3 轮了！换个话题或降一档时长" : `时间到！第 ${r} 轮完成，休息几秒再来`;
+  tRefreshRounds();
+  tDraw();
+}
+function resetTimer(){
+  clearInterval(T.int);
+  T.running = false;
+  T.left = T.total;
+  const b = document.getElementById("tStart");
+  if(b) b.textContent = "▶ 开始";
+  document.getElementById("tMsg").textContent = "";
+  tDraw();
+}
+function timerCleanup(){
+  clearInterval(T.int);
+  T.running = false;
+  T.left = T.total;
+}
+function beep(){
+  try{
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.frequency.value = 880; g.gain.value = 0.15;
+    o.connect(g); g.connect(ctx.destination);
+    o.start();
+    setTimeout(()=>{ o.frequency.value = 660; }, 160);
+    setTimeout(()=>{ o.stop(); ctx.close(); }, 380);
+  }catch(e){}
+}
+
+/* ---------- 录音回放（仅本机，不上传） ---------- */
+async function toggleRec(){
+  if(T.recording){ stopRec(false); return; }
+  try{
+    T.stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    T.chunks = [];
+    T.recorder = new MediaRecorder(T.stream);
+    T.recorder.ondataavailable = e => T.chunks.push(e.data);
+    T.recorder.onstop = () => {
+      const blob = new Blob(T.chunks, {type:"audio/webm"});
+      const url = URL.createObjectURL(blob);
+      const box = document.getElementById("tPlayback");
+      if(box) box.innerHTML = `<div style="font-size:13px; color:var(--sub); margin-bottom:4px;">回听这一轮：</div><audio controls src="${url}"></audio>`;
+      if(T.stream) T.stream.getTracks().forEach(t=>t.stop());
+    };
+    T.recorder.start();
+    T.recording = true;
+    const b = document.getElementById("tRec");
+    if(b){ b.classList.add("on"); b.textContent = "⏹ 停止录音"; }
+  }catch(e){
+    const m = document.getElementById("tMsg");
+    if(m) m.textContent = "无法录音：请检查浏览器麦克风权限（HTTPS 环境下才能用）";
+  }
+}
+function stopRec(silent){
+  if(T.recorder && T.recording){
+    try{ T.recorder.stop(); }catch(e){}
+  }
+  T.recording = false;
+  const b = document.getElementById("tRec");
+  if(b){ b.classList.remove("on"); b.textContent = "🎙 录下自己"; }
+  if(silent && T.stream){ T.stream.getTracks().forEach(t=>t.stop()); }
+}
+
 /* ---------- 举一反三页 ---------- */
 function drillsPage(){
   return `
@@ -1287,11 +1539,19 @@ function toggleDone(id){
 /* ---------- 路由 ---------- */
 function go(h){ location.hash = h; }
 function route(){
+  timerCleanup();
   const h = location.hash || "#/";
   document.querySelectorAll(".navlinks a").forEach(a=>a.classList.remove("active"));
   if(h.startsWith("#/lesson/")){
     app.innerHTML = lessonPage(parseInt(h.split("/")[2]));
     document.querySelector('[data-route="home"]').classList.add("active");
+  }else if(h.startsWith("#/timer")){
+    timerCleanup();
+    stopRec(true);
+    app.innerHTML = timerPage();
+    document.querySelector('[data-route="timer"]').classList.add("active");
+    tRefreshRounds();
+    tDraw();
   }else if(h.startsWith("#/drills")){
     app.innerHTML = drillsPage();
     document.querySelector('[data-route="drills"]').classList.add("active");
